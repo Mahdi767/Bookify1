@@ -1,0 +1,137 @@
+<!-- templates/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookyFy{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}" defer></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-2">
+                        <i class="fas fa-book-reader text-3xl text-blue-500"></i>
+                        <span class="text-xl font-bold text-gray-800">BookiFy</span>
+                    </a>
+                </div>
+
+                <!-- Search Bar (Centered on Larger Screens) -->
+                <div class="hidden md:flex flex-grow items-center justify-center px-10">
+                    <form method="GET" action="{% url 'home' %}" class="w-full max-w-xl">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </span>
+                            <input class="w-full bg-gray-100 border-transparent rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Search for books..." value="{{ search_query }}">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right-side links -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'view_cart' %}" class="relative text-gray-600 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-shopping-cart fa-lg"></i>
+                            {% if cart_item_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                                {{ cart_item_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <!-- User Dropdown -->
+                        <div class="relative">
+                            <button id="user-menu-button" class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none">
+                                <span class="font-medium text-gray-700">{{ user.first_name|default:user.username }}</span>
+                                <i class="fas fa-chevron-down text-xs text-gray-600"></i>
+                            </button>
+                            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20">
+                                {% if user.is_staff %}
+                                    <a href="{% url 'admin_dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"><i class="fas fa-user-shield w-6"></i> Admin Panel</a>
+                                {% endif %}
+                                <a href="{% url 'my_orders' %}"  class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"><i class="fas fa-history w-6"></i> My Orders</a>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"><i class="fas fa-sign-out-alt w-6"></i> Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="py-2 px-4 font-medium text-gray-600 rounded hover:bg-gray-100 transition duration-300">Login</a>
+                        <a href="{% url 'register' %}" class="py-2 px-4 font-medium text-white bg-blue-500 rounded hover:bg-blue-600 transition duration-300">Register</a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
+                <form method="GET" action="{% url 'home' %}" class="w-full my-2">
+                    <input class="w-full bg-gray-100 border-transparent rounded-full px-4 py-2 focus:outline-none" type="text" name="q" placeholder="Search..." value="{{ search_query }}">
+                </form>
+                {% if user.is_authenticated %}
+                     <a href="{% url 'view_cart' %}" class="flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">
+                        <span>My Cart</span>
+                        {% if cart_item_count > 0 %}
+                        <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                            {{ cart_item_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin_dashboard' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">Admin Panel</a>
+                    {% endif %}
+                    <a href="{% url 'my_orders' %}"  class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">My Orders</a>
+                    <a href="{% url 'logout' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">Login</a>
+                    <a href="{% url 'register' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-blue-500">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-md 
+                    {% if message.tags == 'success' %} bg-green-100 text-green-800 
+                    {% elif message.tags == 'error' %} bg-red-100 text-red-800 
+                    {% else %} bg-blue-100 text-blue-800 
+                    {% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        <!-- Page specific content will go here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500">
+            <p>© {% now "Y" %} BookiFy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

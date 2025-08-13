@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load cart_tags %}
+
+{% block title %}Secure Checkout - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-xl max-w-6xl mx-auto">
+    <!-- Progress Stepper -->
+    <div class="w-full max-w-3xl mx-auto mb-12 px-4">
+        <div class="flex items-center text-sm">
+            <div class="flex items-center text-blue-600">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span class="ml-2 font-semibold">Cart</span>
+            </div>
+            <div class="flex-auto border-t-2 border-blue-600 mx-4"></div>
+            <div class="flex items-center text-blue-600">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
+                <span class="ml-2 font-semibold">Checkout</span>
+            </div>
+            <div class="flex-auto border-t-2 border-gray-300 mx-4"></div>
+            <div class="flex items-center text-gray-400">
+                <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold">3</div>
+                <span class="ml-2">Confirmation</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+        <!-- Left Column: Shipping Information -->
+        <div class="lg:col-span-3">
+            <h1 class="text-2xl font-bold text-gray-800">Checkout</h1>
+            
+            <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-lg font-semibold text-gray-700">Contact Information</h2>
+                <div class="flex items-center space-x-4 mt-2 text-gray-600">
+                    <i class="fas fa-user-circle text-2xl text-gray-400"></i>
+                    <div>
+                        <p class="font-medium">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                        <p class="text-sm">{{ request.user.email }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" class="mt-8 space-y-6">
+                {% csrf_token %}
+                <h2 class="text-lg font-semibold text-gray-700">Shipping Information</h2>
+                <div>
+                    <label for="shipping_address" class="block text-sm font-medium text-gray-700 mb-1">Full Shipping Address <span class="text-red-500">*</span></label>
+                    <textarea name="shipping_address" id="shipping_address" required rows="4" class="w-full border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter your full address, including house, road, city, and zip code."></textarea>
+                    {% if error %}
+                        <p class="mt-2 text-sm text-red-600 font-semibold"><i class="fas fa-exclamation-circle mr-1"></i> {{ error }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="terms" name="terms" type="checkbox" required class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        I have read and agree to the <a href="#" class="text-blue-600 hover:underline">Terms and Conditions</a>.
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div class="lg:col-span-2">
+            <div class="bg-gray-50 rounded-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Review your cart</h2>
+                <div class="space-y-4 max-h-64 overflow-y-auto pr-2">
+                    {% for item in cart_items %}
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <img src="{{ item.book.image.url }}" alt="{{ item.book.title }}" class="w-16 h-20 object-contain border rounded-md p-1 bg-white">
+                            <span class="absolute -top-2 -right-2 bg-gray-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ item.quantity }}x</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="font-medium text-gray-800 leading-tight">{{ item.book.title }}</p>
+                        </div>
+                        <p class="font-semibold text-gray-700">${{ item.book.price|mul:item.quantity }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-6 pt-4 border-t">
+                    <form class="flex">
+                        <div class="relative w-full">
+                           <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-tag text-gray-400"></i></span>
+                           <input type="text" placeholder="Discount code" class="w-full border-gray-300 rounded-l-md pl-10 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <button type="submit" class="bg-gray-200 text-gray-700 px-4 rounded-r-md hover:bg-gray-300 font-semibold text-sm">Apply</button>
+                    </form>
+                </div>
+
+                <div class="mt-4 pt-4 border-t space-y-2 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span>${{ total_price }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Shipping</span>
+                        <span class="font-semibold">Free</span>
+                    </div>
+                    <div class="flex justify-between text-base font-bold text-gray-900 mt-2 pt-2 border-t">
+                        <span>Total</span>
+                        <span>${{ total_price }}</span>
+                    </div>
+                </div>
+
+                <!-- We need to link the button to the form on the left. We use form="shipping-form-id" -->
+                <button type="submit" form="shipping-form" class="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-semibold text-base">
+                    Pay Now
+                </button>
+                
+                <div class="mt-4 text-center text-sm text-gray-500">
+                    <p><i class="fas fa-lock mr-1"></i> Secure Checkout - SSL Encrypted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- A small script to link the two forms -->
+<script>
+    // Give the form an ID
+    document.querySelector('form[method="POST"]').id = 'shipping-form';
+</script>
+{% endblock %}

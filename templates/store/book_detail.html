@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="rounded-lg  p-6 md:p-8 border border-gray-300">
+    
+    <!-- Breadcrumb Navigation -->
+    <nav class="text-sm mb-6 text-gray-500" aria-label="Breadcrumb">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="{% url 'home' %}" class="hover:text-blue-500">Home</a>
+                <i class="fas fa-chevron-right mx-2"></i>
+            </li>
+            <li class="flex items-center">
+                <a href="{% url 'home' %}" class="hover:text-blue-500">Books</a>
+                <i class="fas fa-chevron-right mx-2"></i>
+            </li>
+            <li class="text-gray-700 font-medium" aria-current="page">
+                {{ book.title|truncatechars:30 }}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Book Image Gallery -->
+        <div class="flex justify-center items-center bg-gray-100 p-8 rounded-lg">
+            <img src="{{ book.image.url }}" alt="{{ book.title }}" class="max-h-[500px] w-auto object-contain rounded-md shadow-lg">
+        </div>
+
+        <!-- Book Information and Actions -->
+        <div class="flex flex-col justify-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">{{ book.title }}</h1>
+            <p class="text-xl text-gray-600 mt-2">by <span class="font-semibold">{{ book.author }}</span></p>
+
+            <div class="my-6">
+                <span class="text-4xl font-bold text-blue-600">${{ book.price }}</span>
+                <span class="text-green-600 font-semibold ml-4"><i class="fas fa-check-circle mr-1"></i> In Stock</span>
+            </div>
+
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-semibold text-gray-800">Description</h4>
+                <p class="text-gray-700 mt-2 leading-relaxed text-base">{{ book.description|linebreaks }}</p>
+            </div>
+
+            <!-- Add to Cart Form -->
+            <form action="{% url 'add_to_cart' pk=book.pk %}" method="POST" class="mt-8 border-t pt-8">
+                {% csrf_token %}
+                <div class="flex items-center space-x-4">
+                    <!-- Quantity Selector -->
+                    <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button type="button" onclick="this.nextElementSibling.stepDown()" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg">-</button>
+                        <input type="number" name="quantity" value="1" min="1" class="w-16 text-center border-x border-gray-300 focus:outline-none">
+                        <button type="button" onclick="this.previousElementSibling.stepUp()" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg">+</button>
+                    </div>
+                    <!-- Add to Cart Button -->
+                    <button type="submit" class="w-full flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 text-lg font-semibold flex items-center justify-center">
+                        <i class="fas fa-cart-plus mr-2"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Related Books Section -->
+{% if related_books %}
+<div class="mt-16">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">You Might Also Like</h2>
+        <p class="text-gray-500 mt-1">Other books by {{ book.author }}</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for related_book in related_books %}
+        <div class="group bg-white rounded-lg shadow-md overflow-hidden flex flex-col justify-between">
+            <div class="relative">
+                <div class="w-full h-72 p-4 bg-gray-100 flex items-center justify-center">
+                    <img src="{{ related_book.image.url }}" alt="{{ related_book.title }}" class="max-w-full max-h-full object-contain rounded-md shadow-sm">
+                </div>
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center">
+                    <div class="text-center">
+                        <a href="{% url 'book_detail' pk=related_book.pk %}" class="flex items-center text-white bg-transparent border-2 border-white py-2 px-5 rounded-full transform hover:scale-105 transition-transform duration-200">
+                            <i class="fas fa-search-plus mr-2"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 text-center flex-grow">
+                <h3 class="text-lg font-semibold text-gray-900 leading-snug truncate" title="{{ related_book.title }}">{{ related_book.title }}</h3>
+                <p class="text-gray-500 text-sm mt-1">by {{ related_book.author }}</p>
+                <div class="mt-4">
+                    <p class="text-2xl font-bold text-blue-600">${{ related_book.price }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

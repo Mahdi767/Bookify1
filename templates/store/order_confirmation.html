@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-xl p-12 text-center">
+    <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-6">
+        <svg class="h-16 w-16 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+    </div>
+    <h1 class="text-3xl font-bold text-gray-900">Thank You For Your Order!</h1>
+    <p class="text-gray-600 mt-2">Your order has been placed successfully.</p>
+    
+    <div class="text-left mt-8 p-6 bg-gray-50 rounded-lg border">
+        <p class="text-lg">Your Order ID is: <strong class="text-blue-600">#{{ order.id }}</strong></p>
+        <p class="text-lg mt-2">Total Amount: <strong class="text-gray-800">${{ order.total_price }}</strong></p>
+        <p class="text-lg mt-4">We will ship your items to:</p>
+        <p class="text-md mt-1 text-gray-700 p-4 bg-gray-100 rounded"><em>{{ order.shipping_address }}</em></p>
+    </div>
+
+    <a href="{% url 'home' %}" class="mt-10 inline-block bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+        Continue Shopping
+    </a>
+</div>
+{% endblock %}

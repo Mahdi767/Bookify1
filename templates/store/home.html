@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to BookyFy{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="relative bg-cover bg-center rounded-lg overflow-hidden" style="background-image: url('https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=1974&auto=format&fit=crop'); min-height: 400px;">
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center p-4">
+        <h1 class="text-white text-4xl md:text-6xl font-extrabold leading-tight">Find Your Next Great Read</h1>
+        <p class="text-gray-200 mt-4 text-lg md:text-xl max-w-2xl">Discover worlds of adventure, knowledge, and fantasy. Your next favorite book is just a click away.</p>
+        <a href="#book-collection" class="mt-8 bg-blue-500 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-600 transition-transform transform hover:scale-105">
+            Explore Books
+        </a>
+    </div>
+</div>
+
+<!-- Book Collection Section -->
+<div id="book-collection" class="mt-16">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Latest Arrivals</h2>
+        <p class="text-gray-500 mt-1">Handpicked selections just for you</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for book in books %}
+        <div class="group bg-white rounded-lg shadow-md overflow-hidden flex flex-col justify-between">
+            <!-- Top part: Image and Overlay -->
+            <div class="relative">
+                <div class="w-full bg-gray-100 flex items-center justify-center">
+                    <img src="{{ book.image.url }}" alt="{{ book.title }}" class="max-w-full max-h-full object-contain rounded-md shadow-sm">
+                </div>
+                <!-- Hover Overlay -->
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center">
+                    <div class="text-center space-y-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <a href="{% url 'book_detail' pk=book.pk %}" class="flex items-center text-white bg-transparent border-2 border-white py-2 px-5 rounded-full transform hover:scale-105 transition-transform duration-200">
+                            <i class="fas fa-search-plus mr-2"></i> View Details
+                        </a>
+                        <form action="{% url 'add_to_cart' pk=book.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="flex items-center text-white bg-blue-600 py-2 px-5 rounded-full transform hover:scale-105 transition-transform duration-200">
+                                <i class="fas fa-cart-plus mr-2"></i> Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom part: Book Info -->
+            <div class="p-5 text-center flex-grow flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 leading-snug truncate" title="{{ book.title }}">{{ book.title }}</h3>
+                    <p class="text-gray-500 text-sm mt-1">by {{ book.author }}</p>
+                </div>
+                <div class="mt-4">
+                    <p class="text-2xl font-bold text-blue-600">${{ book.price }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- ... (empty state code remains the same) ... -->
+        <div class="col-span-full text-center py-20 bg-white rounded-lg shadow-md">
+            <i class="fas fa-book-dead fa-4x text-gray-300"></i>
+            <h3 class="mt-4 text-2xl font-semibold text-gray-700">No Books Found</h3>
+            <p class="text-gray-500 mt-2">We couldn't find any books matching your search. Try a different keyword!</p>
+            <a href="{% url 'home' %}" class="mt-6 inline-block bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300">
+                Clear Search
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ... (Pagination code remains the same) ... -->
+</div>
+
+{% endblock %}

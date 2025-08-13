@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Book - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <div class="text-center mb-8">
+        <i class="fas fa-edit text-5xl text-green-500"></i>
+        <h1 class="text-3xl font-bold text-gray-800 mt-4">Edit Book Details</h1>
+        <p class="text-gray-500">Update the information for "{{ book.title }}"</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Title Field -->
+        <div>
+            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">Book Title</label>
+            <div class="relative mt-1">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-heading text-gray-400"></i></span>
+                {{ form.title }}
+            </div>
+        </div>
+
+        <!-- Author Field -->
+        <div>
+            <label for="{{ form.author.id_for_label }}" class="block text-sm font-medium text-gray-700">Author</label>
+            <div class="relative mt-1">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-user-edit text-gray-400"></i></span>
+                {{ form.author }}
+            </div>
+        </div>
+
+        <!-- Price Field -->
+        <div>
+            <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700">Price</label>
+            <div class="relative mt-1">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-dollar-sign text-gray-400"></i></span>
+                {{ form.price }}
+            </div>
+        </div>
+        
+        <!-- Description Field -->
+        <div>
+            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
+            <div class="relative mt-1">
+                 {{ form.description }}
+            </div>
+        </div>
+        
+        <!-- Image Upload Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Book Cover Image</label>
+            {% if form.image.value %}
+                <div class="my-2">
+                    <span class="text-gray-600 text-sm">Currently: </span>
+                    <a href="{{ form.image.value.url }}" target="_blank" class="text-blue-500 hover:underline">{{ form.image.value.name|truncatechars:30 }}</a>
+                </div>
+            {% endif %}
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div class="space-y-1 text-center">
+                    <i class="fas fa-image fa-3x text-gray-400"></i>
+                    <div class="flex text-sm text-gray-600">
+                        <label for="{{ form.image.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                            <span>Change image</span>
+                            {{ form.image }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end space-x-4 pt-4">
+            <a href="{% url 'admin_dashboard' %}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">Cancel</a>
+            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center">
+                <i class="fas fa-save mr-2"></i>
+                Update Book
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

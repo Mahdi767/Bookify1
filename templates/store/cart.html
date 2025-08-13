@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load cart_tags %}
+
+{% block title %}Your Shopping Cart - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Your Shopping Cart</h1>
+
+    {% if cart_items %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Cart Items List (Left/Main Column) -->
+        <div class="lg:col-span-2">
+            <div class="space-y-6">
+                {% for item in cart_items %}
+                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <!-- Product Info -->
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 h-20 w-16 bg-white p-1 border rounded-md">
+                            <img class="h-full w-full object-contain" src="{{ item.book.image.url }}" alt="{{ item.book.title }}">
+                        </div>
+                        <div>
+                            <a href="{% url 'book_detail' pk=item.book.pk %}" class="text-lg font-semibold text-gray-800 hover:text-blue-600">{{ item.book.title }}</a>
+                            <p class="text-sm text-gray-500">by {{ item.book.author }}</p>
+                            <a href="{% url 'remove_from_cart' pk=item.pk %}" class="text-sm text-red-500 hover:text-red-700 font-medium mt-1 inline-block">
+                                <i class="fas fa-trash-alt mr-1"></i>Remove
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity and Price -->
+                    <div class="flex items-center space-x-8">
+                        <!-- Quantity Form -->
+                        <form action="{% url 'update_cart' pk=item.pk %}" method="POST" class="flex items-center">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-16 text-center border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <button type="submit" class="ml-2 bg-gray-200 text-gray-600 px-3 py-1 rounded-md text-xs hover:bg-gray-300">Update</button>
+                        </form>
+                        <!-- Subtotal -->
+                        <div class="w-24 text-right">
+                            <p class="text-lg font-semibold text-gray-800">${{ item.book.price|mul:item.quantity }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Order Summary (Right/Side Column) -->
+        <div class="lg:col-span-1">
+            <div class="bg-gray-50 rounded-lg shadow-sm p-6 sticky top-24">
+                <h2 class="text-xl font-bold text-gray-800 border-b pb-3">Order Summary</h2>
+                
+                <div class="space-y-3 mt-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span class="font-semibold text-gray-800">${{ total_price }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Shipping</span>
+                        <span class="font-semibold text-gray-800">Free</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-6 pt-4 border-t">
+                    <span class="text-lg font-bold text-gray-900">Total</span>
+                    <span class="text-2xl font-bold text-blue-600">${{ total_price }}</span>
+                </div>
+
+                <div class="mt-6">
+                    <a href="{% url 'checkout' %}" class="w-full flex justify-center items-center bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-300 text-lg font-semibold">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Proceed to Checkout
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+        <i class="fas fa-shopping-cart fa-5x text-gray-300"></i>
+        <h2 class="mt-6 text-2xl font-semibold text-gray-700">Your cart is empty.</h2>
+        <p class="text-gray-500 mt-2">Looks like you haven't added any books to your cart yet.</p>
+        <a href="{% url 'home' %}" class="mt-8 inline-block bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 text-base font-semibold">
+            <i class="fas fa-store mr-2"></i>
+            Continue Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

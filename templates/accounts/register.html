@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center py-12">
+    <div class="w-full max-w-lg bg-white p-8 rounded-2xl shadow-xl space-y-6">
+        <div class="text-center">
+            <i class="fas fa-user-plus text-5xl text-green-500 mb-4"></i>
+            <h1 class="text-3xl font-bold text-gray-800">Create Your Account</h1>
+            <p class="text-gray-600 mt-1">Join our community of book lovers!</p>
+        </div>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Display All Form Errors at the Top -->
+            {% if form.errors %}
+                <div class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-md" role="alert">
+                    <p class="font-bold">Please correct the errors below:</p>
+                    <ul class="list-disc list-inside mt-2 text-sm">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error|striptags }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- First Name -->
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="text-sm font-medium text-gray-700">First Name</label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </span>
+                        <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}"
+                               class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="John">
+                    </div>
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="text-sm font-medium text-gray-700">Last Name</label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </span>
+                        <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}"
+                               class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Doe">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="text-sm font-medium text-gray-700">Username</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-at text-gray-400"></i>
+                    </span>
+                    <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="johndoe">
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="text-sm font-medium text-gray-700">Email Address</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400"></i>
+                    </span>
+                    <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="you@example.com">
+                </div>
+            </div>
+            
+            <!-- Password 1 -->
+            <div>
+                <label for="{{ form.password1.id_for_label }}" class="text-sm font-medium text-gray-700">Password</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </span>
+                    <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="••••••••">
+                </div>
+                {% if form.password1.help_text %}
+                    <p class="text-gray-500 text-xs mt-1 ml-1">{{ form.password1.help_text|safe }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Password 2 -->
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="text-sm font-medium text-gray-700">Confirm Password</label>
+                <div class="relative mt-1">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </span>
+                    <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
+                           class="w-full border border-gray-300 pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full flex justify-center items-center bg-green-500 text-white py-2.5 rounded-lg hover:bg-green-600 transition-colors duration-300 font-semibold text-base mt-6">
+                <i class="fas fa-check-circle mr-2"></i>
+                Create Account
+            </button>
+        </form>
+        
+        <p class="text-center text-sm text-gray-600">
+            Already have an account? 
+            <a href="{% url 'login' %}" class="font-medium text-blue-600 hover:text-blue-500">
+                Login here
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}
