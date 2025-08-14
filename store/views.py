@@ -64,36 +64,32 @@ def edit_book(request, pk):
     book_instance = get_object_or_404(Book, pk=pk)
 
     if request.method == 'POST':
-        # ফর্মটি ভ্যালিডেশনের জন্য ব্যবহার করুন, কিন্তু সরাসরি সেভ করার জন্য নয়।
+
         form = BookForm(request.POST, request.FILES, instance=book_instance)
         
         if form.is_valid():
-            # ফর্মের ডেটা থেকে প্রতিটি ফিল্ড ম্যানুয়ালি আপডেট করুন
-            # এটি নিশ্চিত করে যে আমরা শুধুমাত্র সেই ফিল্ডগুলোই পরিবর্তন করছি যা ফর্মে আছে।
+        
             book_instance.title = form.cleaned_data['title']
             book_instance.author = form.cleaned_data['author']
             book_instance.description = form.cleaned_data['description']
             book_instance.price = form.cleaned_data['price']
 
-            # ইমেজ ফিল্ডটি সাবধানে হ্যান্ডেল করুন
-            # form.cleaned_data['image'] False হতে পারে যদি 'clear' চেকবক্সটি সিলেক্ট করা হয়।
-            # এটি None হতে পারে যদি কোনো নতুন ফাইল আপলোড না করা হয়।
+          
             if form.cleaned_data['image'] is not None:
-                # যদি একটি নতুন ছবি আপলোড করা হয় বা 'clear' চেকবক্স সিলেক্ট করা হয়
+         
                 if form.cleaned_data['image'] == False:
-                    # 'clear' চেকবক্স সিলেক্ট করা হয়েছে, তাই ছবিটি মুছে দিন
+                 
                     book_instance.image = None
                 else:
-                    # নতুন ছবি আপলোড করা হয়েছে
+                
                     book_instance.image = form.cleaned_data['image']
             
-            # এখন book_instance অবজেক্টটি সেভ করুন।
-            # যেহেতু এটি ডেটাবেস থেকে আনা একটি বিদ্যমান অবজেক্ট, Django একটি UPDATE query চালাবে।
+        
             book_instance.save()
             
             return redirect('admin_dashboard')
         else:
-            # যদি ফর্ম ভ্যালিড না হয়, তাহলে ভুলের সাথে পেজটি আবার রেন্ডার করুন।
+       
             context = {
                 'form': form,
                 'book': book_instance
@@ -101,7 +97,7 @@ def edit_book(request, pk):
             return render(request, 'admin_panel/edit_book.html', context)
 
     else:
-        # GET রিকোয়েস্টের জন্য ফর্মটি ইনিশিয়ালাইজ করুন
+      
         form = BookForm(instance=book_instance)
 
     context = {
